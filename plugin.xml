@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	id="cordova-plugin-aws-user-pool" version="0.1">
+	<name>Aws UserPool sdk</name>
+	<description>This plugin will allow a native communication with the aws userPool</description>
+	<keywords>aws, userPool</keywords>
+	<engines>
+	   <engine name="cordova" version=">=3.7.0" />
+    </engines>
+	
+    <js-module src="www/awsUserPoolPlugin.js" name="AwsUserPoolPlugin">
+        <clobbers target="window.AwsUserPoolPlugin" />
+    </js-module>
+    <platform name="ios">
+    	<config-file target="config.xml" parent="/*">
+		    <feature name="AwsUserPoolPlugin">
+		        <param name="ios-package" value="AwsUserPoolPlugin"/>
+			</feature>
+		</config-file>
+
+		<!-- frameworks -->
+		<framework src="AWSCore" type="podspec" spec=">= 2.5.1" />
+		<framework src="AWSCognito" type="podspec" spec=">= 2.5.1" />
+		<framework src="AWSCognitoIdentityProvider" type="podspec" spec=">= 2.5.1" />
+
+        <header-file src="src/AwsUserPoolPlugin.h" />
+        <source-file src="src/AwsUserPoolPlugin.m" />
+	</platform>
+</plugin>
