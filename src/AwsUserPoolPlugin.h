@@ -1,6 +1,7 @@
 #import <Cordova/CDV.h>
 
 #import "AWSCognitoIdentityProvider.h"
+#import <AWSCognito/AWSCognito.h>
 
 	@interface AwsUserPoolPlugin : CDVPlugin
 
@@ -10,8 +11,11 @@
 	@property AWSCognitoIdentityUserPool *Pool;
 	@property AWSCognitoIdentityUser *User;
 	@property AWSCognitoIdentityUserSessionToken *actualAccessToken;
-	
-	- (void)init:(CDVInvokedUrlCommand*)command;
+ 	@property NSString *arnIdentityPoolId;
+ 	@property AWSCognito *syncClient;
+ 	@property AWSCognitoDataset *dataset;
+
+ 	- (void)init:(CDVInvokedUrlCommand*)command;
 	- (void)signIn:(CDVInvokedUrlCommand*)command;
 	- (void)signUp:(CDVInvokedUrlCommand*)command;
 	- (void)confirmSignUp:(CDVInvokedUrlCommand*)command;
@@ -19,5 +23,8 @@
 	- (void)updatePassword:(CDVInvokedUrlCommand*)command;
 	- (void)getDetails:(CDVInvokedUrlCommand*)command;
 	- (void)resendConfirmationCode:(CDVInvokedUrlCommand*)command;
+	- (void)createAWSCognitoDataset:(CDVInvokedUrlCommand*) command;
+	- (void)getUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
+    - (void)setUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
 
 	@end

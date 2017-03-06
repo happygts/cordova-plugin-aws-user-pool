@@ -5,6 +5,7 @@
 	AWSRegionType const CognitoIdentityUserPoolRegion = AWSRegionEUWest1;
 
     - (void)init:(CDVInvokedUrlCommand*)command{
+        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! INIT");
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
@@ -12,12 +13,25 @@
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
         self.User = nil;
         self.actualAccessToken = nil;
-
-        CDVPluginResult *pluginResult;
+        self.arnIdentityPoolId = [options objectForKey:@"arnIdentityPoolId"];
+        self.dataset = nil;
 
         //setup service config
-        AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:nil];
-        
+        AWSServiceConfiguration *serviceConfiguration = nil;
+
+        if (self.arnIdentityPoolId) {
+            NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TEST if");
+            AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:CognitoIdentityUserPoolRegion identityPoolId:self.arnIdentityPoolId];
+            serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:credentialsProvider];
+        }
+        else {
+            NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TEST else");
+            serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:nil];
+        }
+
+        // save defaultServiceConfiguration
+        [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = serviceConfiguration;
+
         //create a pool
         AWSCognitoIdentityUserPoolConfiguration *configuration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId  clientSecret:self.CognitoIdentityUserPoolAppClientSecret poolId:self.CognitoIdentityUserPoolId];
         
@@ -25,10 +39,11 @@
 
         self.Pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
 
-        // save defaultServiceConfiguration
-        [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = serviceConfiguration;
-
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
+        if (self.arnIdentityPoolId) {
+            self.syncClient = [AWSCognito defaultCognito];
+        }
+        
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
@@ -232,4 +247,45 @@
             return nil;
         }];
     }
+
+    /*
+    ** Cognito Sync
+    */
+
+    - (void) createAWSCognitoDataset:(CDVInvokedUrlCommand *) command {
+        // Add a dictionnary to allow to open multiple database
+
+        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+
+        NSString *idString = [options objectForKey:@"id"];
+
+        self.dataset = [self.syncClient openOrCreateDataset:idString];
+
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+
+
+    - (void) getUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
+        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+
+        NSString *keyString = [options objectForKey:@"key"];
+
+        NSString *value = [self.dataset stringForKey:keyString];
+
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+
+    - (void) setUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
+        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+
+        NSString *keyString = [options objectForKey:@"key"];
+        NSString *valueString = [options objectForKey:@"value"];
+
+        [self.dataset setString:valueString forKey:keyString];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+
     @end

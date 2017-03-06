@@ -91,4 +91,37 @@ AwsUserPoolPlugin.prototype.resendConfirmationCode = function(config, successCal
 	}, "AwsUserPoolPlugin", "resendConfirmationCode", [config]);
 };
 
+AwsUserPoolPlugin.prototype.createAWSCognitoDataset = function(config, successCallback, errorCallback) {
+	cordova.exec(function(params) {
+		console.log("[Inside plugin] cordova exec createAWSCognitoDataset with config :", config, "and params :", params);
+		successCallback(params);
+	},
+	function(error) {
+		console.log("[Inside plugin] error during createAWSCognitoDataset :", error);
+		errorCallback(error);
+	}, "AwsUserPoolPlugin", "createAWSCognitoDataset", [config]);
+};
+
+AwsUserPoolPlugin.prototype.getUserDataCognitoSync = function(config, successCallback, errorCallback) {
+	cordova.exec(function(params) {
+		console.log("[Inside plugin] cordova exec getUserDataCognitoSync with config :", config, "and params :", params);
+		successCallback(params);
+	},
+	function(error) {
+		console.log("[Inside plugin] error during getUserDataCognitoSync :", error);
+		errorCallback(error);
+	}, "AwsUserPoolPlugin", "getUserDataCognitoSync", [config]);
+};
+
+AwsUserPoolPlugin.prototype.setUserDataCognitoSync = function(config, successCallback, errorCallback) {
+	cordova.exec(function(params) {
+		console.log("[Inside plugin] cordova exec setUserDataCognitoSync with config :", config, "and params :", params);
+		successCallback(params);
+	},
+	function(error) {
+		console.log("[Inside plugin] error during setUserDataCognitoSync :", error);
+		errorCallback(error);
+	}, "AwsUserPoolPlugin", "setUserDataCognitoSync", [config]);
+};
+
 module.exports = AwsUserPoolPlugin;
