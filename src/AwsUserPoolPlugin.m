@@ -11,6 +11,7 @@
 		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
         self.User = nil;
+        self.actualAccessToken = nil;
 
         CDVPluginResult *pluginResult;
 
@@ -21,8 +22,11 @@
         AWSCognitoIdentityUserPoolConfiguration *configuration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId  clientSecret:self.CognitoIdentityUserPoolAppClientSecret poolId:self.CognitoIdentityUserPoolId];
         
         [AWSCognitoIdentityUserPool registerCognitoIdentityUserPoolWithConfiguration:serviceConfiguration userPoolConfiguration:configuration forKey:@"UserPool"];
-        
+
         self.Pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
+
+        // save defaultServiceConfiguration
+        [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = serviceConfiguration;
 
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
 
@@ -37,13 +41,14 @@
 
         self.User = [self.Pool getUser:username];
     
-        [[self.User getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
+        [[self.User getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else{
-                    AWSCognitoIdentityUserGetDetailsResponse *response = task.result;
+                    self.actualAccessToken = task.result.accessToken;
+
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Authentification sucess"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
@@ -168,30 +173,39 @@
     }
 
     -(void)getDetails:(CDVInvokedUrlCommand*)command {
-        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+        AWSCognitoIdentityProviderGetUserRequest* request = [AWSCognitoIdentityProviderGetUserRequest new];
+        request.accessToken = self.actualAccessToken.tokenString;
 
-        NSString *idString = [options objectForKey:@"id"];        
+        AWSCognitoIdentityProvider *defaultIdentityProvider = [AWSCognitoIdentityProvider defaultCognitoIdentityProvider];
 
-        if (idString) {
-            self.User = [self.Pool getUser:idString];
-        }
-
-        [[self.User getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
+        [[defaultIdentityProvider getUser:request] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityProviderGetUserResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
-                    AWSCognitoIdentityUserGetDetailsResponse *response = task.result;
-                    for (AWSCognitoIdentityUserAttributeType *attribute in response.userAttributes) {
-                        NSLog(@"Attribute: %@ Value: %@", attribute.name, attribute.value);
+                    AWSCognitoIdentityProviderGetUserResponse *response = task.result;
+                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    NSLog(@"%@", response.userAttributes);
+                    NSLog(@"%@", response.userAttributes[0]);
+                    NSLog(@"%@", response.userAttributes[0].name);
+                    NSLog(@"%@", response.userAttributes[0].value);
+
+                    NSMutableDictionary *toReturn= [NSMutableDictionary dictionary];
+                    NSUInteger size = [response.userAttributes count];
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        toReturn[response.userAttributes[i].name] = response.userAttributes[i].value;
                     }
-                    // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:task.result.userAttributes];
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ok"];
+
+                    NSLog(@"Dictionnary :");
+                    NSLog(@"%@", toReturn);
+
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:toReturn];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
             });
-            
             return nil;
         }];
     }
@@ -208,9 +222,11 @@
         [[self.User resendConfirmationCode] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserResendConfirmationCodeResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
-
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
             });
             return nil;

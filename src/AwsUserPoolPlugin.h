@@ -9,6 +9,7 @@
 	@property NSString *CognitoIdentityUserPoolAppClientSecret;
 	@property AWSCognitoIdentityUserPool *Pool;
 	@property AWSCognitoIdentityUser *User;
+	@property AWSCognitoIdentityUserSessionToken *actualAccessToken;
 	
 	- (void)init:(CDVInvokedUrlCommand*)command;
 	- (void)signIn:(CDVInvokedUrlCommand*)command;
