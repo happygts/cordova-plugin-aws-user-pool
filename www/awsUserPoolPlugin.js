@@ -4,6 +4,7 @@ var argscheck = require('cordova/argscheck'),
 
 
 var AwsUserPoolPlugin = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] AwsUserPoolPlugin init");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec init with config :", config, "and params :", params);
 		successCallback();
@@ -15,6 +16,7 @@ var AwsUserPoolPlugin = function(config, successCallback, errorCallback) {
 };
 
 AwsUserPoolPlugin.prototype.signIn = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] signIn");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec signIn with config :", config, "and params :", params);
 		successCallback(params);
@@ -26,6 +28,7 @@ AwsUserPoolPlugin.prototype.signIn = function(config, successCallback, errorCall
 };
 
 AwsUserPoolPlugin.prototype.signUp = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] signUp");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec signUp with config :", config, "and params :", params);
 		successCallback(params);
@@ -37,6 +40,7 @@ AwsUserPoolPlugin.prototype.signUp = function(config, successCallback, errorCall
 };
 
 AwsUserPoolPlugin.prototype.confirmSignUp = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] confirmSignUp");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec confirmSignUp with config :", config, "and params :", params);
 		successCallback(params);
@@ -48,6 +52,7 @@ AwsUserPoolPlugin.prototype.confirmSignUp = function(config, successCallback, er
 };
 
 AwsUserPoolPlugin.prototype.forgotPassword = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] forgotPassword");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec forgotPassword with config :", config, "and params :", params);
 		successCallback(params);
@@ -59,6 +64,7 @@ AwsUserPoolPlugin.prototype.forgotPassword = function(config, successCallback, e
 };
 
 AwsUserPoolPlugin.prototype.updatePassword = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] updatePassword");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec updatePassword with config :", config, "and params :", params);
 		successCallback(params);
@@ -70,6 +76,7 @@ AwsUserPoolPlugin.prototype.updatePassword = function(config, successCallback, e
 };
 
 AwsUserPoolPlugin.prototype.getDetails = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] getDetails");
 	cordova.exec(function(userDetails) {
 		console.log("[Inside plugin] cordova exec getDetails with config :", config, "and params :", userDetails);
 		successCallback(userDetails);
@@ -81,6 +88,7 @@ AwsUserPoolPlugin.prototype.getDetails = function(config, successCallback, error
 };
 
 AwsUserPoolPlugin.prototype.resendConfirmationCode = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] resendConfirmationCode");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec resendConfirmationCode with config :", config, "and params :", params);
 		successCallback(params);
@@ -92,6 +100,7 @@ AwsUserPoolPlugin.prototype.resendConfirmationCode = function(config, successCal
 };
 
 AwsUserPoolPlugin.prototype.createAWSCognitoDataset = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] createAWSCognitoDataset");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec createAWSCognitoDataset with config :", config, "and params :", params);
 		successCallback(params);
@@ -103,6 +112,7 @@ AwsUserPoolPlugin.prototype.createAWSCognitoDataset = function(config, successCa
 };
 
 AwsUserPoolPlugin.prototype.getUserDataCognitoSync = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] getUserDataCognitoSync");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec getUserDataCognitoSync with config :", config, "and params :", params);
 		successCallback(params);
@@ -114,6 +124,7 @@ AwsUserPoolPlugin.prototype.getUserDataCognitoSync = function(config, successCal
 };
 
 AwsUserPoolPlugin.prototype.setUserDataCognitoSync = function(config, successCallback, errorCallback) {
+	console.log("[Inside plugin] setUserDataCognitoSync");
 	cordova.exec(function(params) {
 		console.log("[Inside plugin] cordova exec setUserDataCognitoSync with config :", config, "and params :", params);
 		successCallback(params);

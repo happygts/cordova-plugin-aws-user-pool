@@ -14,6 +14,7 @@
  	@property NSString *arnIdentityPoolId;
  	@property AWSCognito *syncClient;
  	@property AWSCognitoDataset *dataset;
+ 	@property AWSCognitoCredentialsProvider *credentialsProvider;
 
  	- (void)init:(CDVInvokedUrlCommand*)command;
 	- (void)signIn:(CDVInvokedUrlCommand*)command;
