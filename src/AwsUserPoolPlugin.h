@@ -3,6 +3,8 @@
 #import "AWSCognitoIdentityProvider.h"
 #import <AWSCognito/AWSCognito.h>
 
+#import <Foundation/Foundation.h>
+
 	@interface AwsUserPoolPlugin : CDVPlugin
 
 	@property NSString *CognitoIdentityUserPoolId;
@@ -27,5 +29,23 @@
 	- (void)createAWSCognitoDataset:(CDVInvokedUrlCommand*) command;
 	- (void)getUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
     - (void)setUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
+
+	@end
+
+	@interface AWSCognitoIdentityUserPool (UserPoolsAdditions)
+
+	- (AWSTask<NSString*>*) token;
+
+	@end
+
+	@interface MyManager : NSObject {
+	    NSString *lastUsername;
+	    NSString *lastPassword;
+	}
+
+	@property (nonatomic, retain) NSString *lastUsername;
+	@property (nonatomic, retain) NSString *lastPassword;
+
+	+ (id)sharedManager;
 
 	@end

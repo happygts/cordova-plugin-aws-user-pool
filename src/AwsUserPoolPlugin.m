@@ -1,16 +1,61 @@
 #import "AwsUserPoolPlugin.h"
 
+    @implementation MyManager
+
+    @synthesize lastUsername;
+    @synthesize lastPassword;
+
+    + (id)sharedManager {
+        static MyManager *sharedMyManager = nil;
+        static dispatch_once_t onceToken;
+
+        dispatch_once(&onceToken, ^{
+            sharedMyManager = [[self alloc] init];
+        });
+        return sharedMyManager;
+    }
+
+    - (id)init {
+      if (self = [super init]) {
+            lastUsername = [[NSString alloc] initWithString:@""];
+            lastPassword = [[NSString alloc] initWithString:@""];
+      }
+      return self;
+    }
+
+    @end
+
+    @implementation AWSCognitoIdentityUserPool (UserPoolsAdditions)
+
+    static AWSSynchronizedMutableDictionary *_serviceClients = nil;
+
+    - (AWSTask<NSString *> *)token {
+        NSLog(@"Inside Token");
+        
+        MyManager *sharedManager = [MyManager sharedManager];
+
+        NSLog(@"username : @%, password: @%", sharedManager.lastUsername, sharedManager.lastPassword);
+
+        return [[[self currentUser] getSession:sharedManager.lastUsername password:sharedManager.lastPassword validationData:nil]
+                continueWithSuccessBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
+                    return [AWSTask taskWithResult:task.result.idToken.tokenString];
+                }];
+    }
+
+    @end
+
     @implementation AwsUserPoolPlugin
 
 	AWSRegionType const CognitoIdentityUserPoolRegion = AWSRegionEUWest1;
 
     - (void)init:(CDVInvokedUrlCommand*)command{
-        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! INIT");
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
 		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
+        if (self.CognitoIdentityUserPoolAppClientSecret == @"")
+            self.CognitoIdentityUserPoolAppClientSecret = nil;
         self.User = nil;
         self.actualAccessToken = nil;
         self.arnIdentityPoolId = [options objectForKey:@"arnIdentityPoolId"];
@@ -20,7 +65,7 @@
 
         AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:nil];
 
-        AWSCognitoIdentityUserPoolConfiguration *userPoolConfiguration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId clientSecret:self.CognitoIdentityUserPoolAppClientSecret poolId:self.CognitoIdentityUserPoolId];
+        AWSCognitoIdentityUserPoolConfiguration *userPoolConfiguration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId clientSecret:nil poolId:self.CognitoIdentityUserPoolId];
 
         [AWSCognitoIdentityUserPool registerCognitoIdentityUserPoolWithConfiguration:serviceConfiguration userPoolConfiguration:userPoolConfiguration forKey:@"UserPool"];
 
@@ -30,6 +75,13 @@
 
         AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
         [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+
+        self.syncClient = [AWSCognito defaultCognito];
+
+        MyManager *sharedManager = [MyManager sharedManager];
+
+        sharedManager.lastUsername = @"";
+        sharedManager.lastPassword = @"";
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
 
@@ -52,10 +104,32 @@
                 } else{
                     self.actualAccessToken = task.result.accessToken;
 
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!! task.result.accessToken :%@", task.result.accessToken);
+                    MyManager *sharedManager = [MyManager sharedManager];
 
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Authentification sucess"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    sharedManager.lastUsername = username;
+                    sharedManager.lastPassword = password;
+
+                    [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if(task.error){
+                                NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
+                                NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error.userInfo);
+                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
+                                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                            } else {
+                                NSString *keyString = [options objectForKey:@"key"];
+
+                                NSString *value = [self.dataset stringForKey:keyString];
+
+                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
+                                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                            }
+                        });
+                        return nil;
+                    }];
+
+                    // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Authentification sucess"];
+                    // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
             });
             return nil;
@@ -186,22 +260,10 @@
         [[defaultIdentityProvider getUser:request] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityProviderGetUserResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!");
-                    NSLog(task.error);
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!");
-                    NSLog(task.error.userInfo);
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!");
-                    NSLog(task.error.userInfo[@"message"]);
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!");
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
                     AWSCognitoIdentityProviderGetUserResponse *response = task.result;
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    NSLog(@"%@", response.userAttributes);
-                    NSLog(@"%@", response.userAttributes[0]);
-                    NSLog(@"%@", response.userAttributes[0].name);
-                    NSLog(@"%@", response.userAttributes[0].value);
 
                     NSMutableDictionary *toReturn= [NSMutableDictionary dictionary];
                     NSUInteger size = [response.userAttributes count];
@@ -210,9 +272,6 @@
                     {
                         toReturn[response.userAttributes[i].name] = response.userAttributes[i].value;
                     }
-
-                    NSLog(@"Dictionnary :");
-                    NSLog(@"%@", toReturn);
 
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:toReturn];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -255,10 +314,9 @@
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
         NSString *idString = [options objectForKey:@"id"];
+        NSString *cognitoId = self.credentialsProvider.identityId;
 
-        self.syncClient = [AWSCognito defaultCognito];
-
-        self.dataset = [self.syncClient openOrCreateDataset:idString];
+        self.dataset = [[AWSCognito defaultCognito] openOrCreateDataset:idString];
 
         // self.dataset = [[AWSCognito defaultCognito] openOrCreateDataset:datasetName];:@"user_data"];
 
@@ -267,35 +325,50 @@
             return [conflict resolveWithRemoteRecord];
         };
 
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(task.error){
+                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                } else {
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                }
+            });
+            return nil;
+        }];
+
+        // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
+        // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
 
     - (void) getUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
-        [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
+        NSString *keyString = [options objectForKey:@"key"];
+
+        NSString *value = [self.dataset stringForKey:keyString];
+
+        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Result value :");
+        NSLog(value);
+
+        [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
                     NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error.userInfo);
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
-                    NSLog(@"identityId : %@", task.result);
-                    NSString *keyString = [options objectForKey:@"key"];
-
-                    NSString *value = [self.dataset stringForKey:keyString];
-
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Result value :");
-                    NSLog(value);
-
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
             });
             return nil;
         }];
+
+        // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+        // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
     - (void) setUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
