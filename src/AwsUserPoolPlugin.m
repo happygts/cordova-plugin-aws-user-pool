@@ -29,12 +29,8 @@
 
     static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
-    - (AWSTask<NSString *> *)token {
-        NSLog(@"Inside Token");
-        
+    - (AWSTask<NSString *> *)token {        
         MyManager *sharedManager = [MyManager sharedManager];
-
-        NSLog(@"username : @%, password: @%", sharedManager.lastUsername, sharedManager.lastPassword);
 
         return [[[self currentUser] getSession:sharedManager.lastUsername password:sharedManager.lastPassword validationData:nil]
                 continueWithSuccessBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
@@ -112,7 +108,6 @@
                     [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if(task.error){
-                                NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
                                 NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error.userInfo);
                                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -127,9 +122,6 @@
                         });
                         return nil;
                     }];
-
-                    // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Authentification sucess"];
-                    // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
             });
             return nil;
@@ -318,8 +310,6 @@
 
         self.dataset = [[AWSCognito defaultCognito] openOrCreateDataset:idString];
 
-        // self.dataset = [[AWSCognito defaultCognito] openOrCreateDataset:datasetName];:@"user_data"];
-
         self.dataset.conflictHandler = ^AWSCognitoResolvedConflict* (NSString *datasetName, AWSCognitoConflict *conflict) {
             // override and always choose remote changes
             return [conflict resolveWithRemoteRecord];
@@ -328,7 +318,6 @@
         [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
@@ -338,9 +327,6 @@
             });
             return nil;
         }];
-
-        // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"OK"];
-        // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
 
@@ -349,9 +335,6 @@
         NSString *keyString = [options objectForKey:@"key"];
 
         NSString *value = [self.dataset stringForKey:keyString];
-
-        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Result value :");
-        NSLog(value);
 
         [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -366,15 +349,10 @@
             });
             return nil;
         }];
-
-        // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
-        // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
     - (void) setUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
-        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Inside setUserDataCognitoSync :");
         NSString *identityId = self.credentialsProvider.identityId;
-        NSLog(@"identityId : %@", identityId);
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
         NSString *keyString = [options objectForKey:@"key"];
@@ -384,7 +362,6 @@
         [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
