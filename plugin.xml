@@ -23,8 +23,11 @@
 		<framework src="AWSCore" type="podspec" spec=">= 2.5.1" />
 		<framework src="AWSCognito" type="podspec" spec=">= 2.5.1" />
 		<framework src="AWSCognitoIdentityProvider" type="podspec" spec=">= 2.5.1" />
+	    <framework src="SystemConfiguration.framework" weak="true" />
 
         <header-file src="src/AwsUserPoolPlugin.h" />
+        <header-file src="src/Reachability.h" />
         <source-file src="src/AwsUserPoolPlugin.m" />
+        <source-file src="src/Reachability.m" />
 	</platform>
 </plugin>

@@ -5,6 +5,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "Reachability.h"
+
 	@interface AwsUserPoolPlugin : CDVPlugin
 
 	@property NSString *CognitoIdentityUserPoolId;
@@ -20,6 +22,7 @@
 
  	- (void)init:(CDVInvokedUrlCommand*)command;
 	- (void)signIn:(CDVInvokedUrlCommand*)command;
+	- (void)offlineSignIn:(CDVInvokedUrlCommand*)command;
 	- (void)signUp:(CDVInvokedUrlCommand*)command;
 	- (void)confirmSignUp:(CDVInvokedUrlCommand*)command;
 	- (void)forgotPassword:(CDVInvokedUrlCommand*)command;

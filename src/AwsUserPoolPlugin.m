@@ -85,6 +85,25 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
+    - (void)offlineSignIn:(CDVInvokedUrlCommand*)command {
+        /*
+        // The SignIn will always return true, you need to manage the signin on the cordova side.
+        // This function is needed if you already signin your user with internet and you want him to access to his data
+        */
+        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+
+        NSString *username = [options objectForKey:@"username"];
+        NSString *password = [options objectForKey:@"password"];
+
+        MyManager *sharedManager = [MyManager sharedManager];
+
+        sharedManager.lastUsername = username;
+        sharedManager.lastPassword = password;
+
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn offline successful"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+
     - (void)signIn:(CDVInvokedUrlCommand*)command{
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
@@ -96,6 +115,11 @@
         [[self.User getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
+                    MyManager *sharedManager = [MyManager sharedManager];
+
+                    sharedManager.lastUsername = username;
+                    sharedManager.lastPassword = password;
+
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else{
@@ -117,7 +141,7 @@
 
                                 NSString *value = [self.dataset stringForKey:keyString];
 
-                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
+                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                             }
                         });
@@ -313,19 +337,25 @@
             // override and always choose remote changes
             return [conflict resolveWithRemoteRecord];
         };
-
-        [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-            });
-            return nil;
-        }];
+        
+        if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+            [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(task.error){
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    } else {
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                });
+                return nil;
+            }];
+        }
     }
 
 
@@ -335,19 +365,25 @@
 
         NSString *value = [self.dataset stringForKey:keyString];
 
-        [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(task.error){
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-            });
-            return nil;
-        }];
+        if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+            [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(task.error){
+                        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    } else {
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                });
+                return nil;
+            }];
+        }
     }
 
     - (void) setUserDataCognitoSync:(CDVInvokedUrlCommand *) command {
@@ -358,18 +394,24 @@
         NSString *valueString = [options objectForKey:@"value"];
 
         [self.dataset setString:valueString forKey:keyString];
-        [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"setUserDataCognitoSync Successful"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-            });
-            return nil;
-        }];
+        if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+            [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(task.error){
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    } else {
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"setUserDataCognitoSync Successful"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                });
+                return nil;
+            }];
+        }
     }
 
     @end
