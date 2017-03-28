@@ -50,8 +50,9 @@
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
 		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
-        if (self.CognitoIdentityUserPoolAppClientSecret == @"")
+        if ([self.CognitoIdentityUserPoolAppClientSecret length] == 0) {
             self.CognitoIdentityUserPoolAppClientSecret = nil;
+        }
         self.User = nil;
         self.actualAccessToken = nil;
         self.arnIdentityPoolId = [options objectForKey:@"arnIdentityPoolId"];
@@ -61,7 +62,7 @@
 
         AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:nil];
 
-        AWSCognitoIdentityUserPoolConfiguration *userPoolConfiguration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId clientSecret:nil poolId:self.CognitoIdentityUserPoolId];
+        AWSCognitoIdentityUserPoolConfiguration *userPoolConfiguration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId clientSecret:self.CognitoIdentityUserPoolAppClientSecret poolId:self.CognitoIdentityUserPoolId];
 
         [AWSCognitoIdentityUserPool registerCognitoIdentityUserPoolWithConfiguration:serviceConfiguration userPoolConfiguration:userPoolConfiguration forKey:@"UserPool"];
 
@@ -222,8 +223,6 @@
     }
 
     - (void)updatePassword:(CDVInvokedUrlCommand*)command {
-        //confirm forgot password with input from ui.
-
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
         NSString *confirmationCode = [options objectForKey:@"confirmationCode"];
