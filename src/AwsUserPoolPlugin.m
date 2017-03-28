@@ -50,9 +50,9 @@
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
 		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
-        if ([self.CognitoIdentityUserPoolAppClientSecret length] == 0) {
+        if(!self.CognitoIdentityUserPoolAppClientSecret || [self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]
+            || self.CognitoIdentityUserPoolAppClientSecret.length)
             self.CognitoIdentityUserPoolAppClientSecret = nil;
-        }
         self.User = nil;
         self.actualAccessToken = nil;
         self.arnIdentityPoolId = [options objectForKey:@"arnIdentityPoolId"];
