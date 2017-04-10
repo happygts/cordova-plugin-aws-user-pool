@@ -120,7 +120,7 @@
                     sharedManager.lastUsername = username;
                     sharedManager.lastPassword = password;
 
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else{
                     self.actualAccessToken = task.result.accessToken;
@@ -155,31 +155,34 @@
 
     - (void)signUp:(CDVInvokedUrlCommand*)command{
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
-        NSMutableArray * attributes = [NSMutableArray new];
 
         NSString *passwordString = [options objectForKey:@"password"];
-        NSString *nameString = [options objectForKey:@"name"];
         NSString *idString = [options objectForKey:@"id"];
-        NSString *emailString = [options objectForKey:@"email"];
 
-        AWSCognitoIdentityUserAttributeType * email = [AWSCognitoIdentityUserAttributeType new];
-        email.name = @"email";
-        email.value = emailString;
+        NSMutableArray* attributes = [options objectForKey:@"attributes"];
+        NSMutableArray* attributesToSend = [NSMutableArray new];
 
-        
-        AWSCognitoIdentityUserAttributeType * name = [AWSCognitoIdentityUserAttributeType new];
-        name.name = @"name";
-        name.value = nameString;
+        NSUInteger size = [attributes count];
 
-        if(![@"" isEqualToString:email.value]){
-            [attributes addObject:email];
+        for (int i = 0; i < size; i++)
+        {
+            NSMutableDictionary* attributesIndex = [attributes objectAtIndex:i];
+
+            AWSCognitoIdentityUserAttributeType * tmp = [AWSCognitoIdentityUserAttributeType new];
+
+            tmp.name  = [attributesIndex objectForKey:@"name"];
+            tmp.value = [attributesIndex objectForKey:@"value"];
+
+            NSLog(@"Name : %@", tmp.name);
+            NSLog(@"Value : %@", tmp.value);
+
+            [attributesToSend addObject:tmp];
         }
-        if(![@"" isEqualToString:name.value]){
-            [attributes addObject:name];
-        }
+
+        NSLog(@"Here");
 
         //sign up the user
-        [[self.Pool signUp:idString password:passwordString userAttributes:attributes validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
+        [[self.Pool signUp:idString password:passwordString userAttributes:attributesToSend validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
