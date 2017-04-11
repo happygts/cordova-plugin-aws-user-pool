@@ -185,7 +185,7 @@
         [[self.Pool signUp:idString password:passwordString userAttributes:attributesToSend validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else{
                     AWSCognitoIdentityUserPoolSignUpResponse * response = task.result;
