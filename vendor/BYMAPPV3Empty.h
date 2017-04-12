@@ -18,6 +18,6 @@
 #import <AWSCore/AWSCore.h>
 
  
-@interface BYMAPPV2Empty : AWSModel
+@interface BYMAPPV3Empty : AWSModel
 
 @end

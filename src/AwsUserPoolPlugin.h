@@ -11,12 +11,8 @@
 // #import <ApiClient.h>
 // #import <Configuration.h>
 
-// load models
-#import "BYMAPPV2Empty.h"
-#import "BYMAPPV2User.h"
-
 // load API classes for accessing endpoints
-#import "BYMAPPV2BYMAPPClient.h"
+#import "BYMAPPV3BYMAPPClient.h"
 
 
 	@interface AwsUserPoolPlugin : CDVPlugin

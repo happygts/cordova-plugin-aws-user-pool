@@ -14,18 +14,14 @@
  */
  
 
-#import <Foundation/Foundation.h>
-#import <AWSCore/AWSCore.h>
+#import "BYMAPPV3User.h"
 
- 
-/**
- A userName
- */
-@interface BYMAPPV2User : AWSModel
-/**
- The userName of an user 
- */
-@property (nonatomic, strong, nonnull) NSString *userName;
+@implementation BYMAPPV3User
 
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+    return @{
+             @"userName": @"userName"
+             };
+}
 
 @end

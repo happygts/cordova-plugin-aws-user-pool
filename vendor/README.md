@@ -32,7 +32,7 @@ You should use one of these two ways to import the AWS Mobile SDK but not both. 
 1. Open up `*.xcworkspace` with Xcode.
 1. Add all files (`*.h` and `*.m` files) under the `generated-src` directory to your Xcode project. If you are using swift then xcode will automatically ask **Would you like to configure an Objective-C bridging header?** select **Create Bridging header** option, Then add the following in the bridging header file that xcode created.
         
-        #import "BYMAPPV2BYMAPPClient.h"
+        #import "BYMAPPV3BYMAPPClient.h"
 
 ## With Frameworks
 
@@ -88,11 +88,11 @@ You should use one of these two ways to import the AWS Mobile SDK but not both. 
 ##  Objective C
 1. First import the generated header file
 
-		#import "BYMAPPV2BYMAPPClient.h"
+		#import "BYMAPPV3BYMAPPClient.h"
 		
 1. Then grab the `defaultClient` from your code
 
-		BYMAPPV2BYMAPPClient *client = [BYMAPPV2BYMAPPClient defaultClient];
+		BYMAPPV3BYMAPPClient *client = [BYMAPPV3BYMAPPClient defaultClient];
 
 1. You can now call your method using the client SDK
 
@@ -103,7 +103,7 @@ You should use one of these two ways to import the AWS Mobile SDK but not both. 
 		        return nil;
 		    }
 		    if (task.result) {
-		       BYMAPPV2Empty * output = task.result;
+		       BYMAPPV3Empty * output = task.result;
 		       //Do something with output
 		    }
 		    return nil;

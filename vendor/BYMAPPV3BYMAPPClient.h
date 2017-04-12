@@ -17,8 +17,8 @@
 #import <Foundation/Foundation.h>
 #import <AWSAPIGateway/AWSAPIGateway.h>
 
-#import "BYMAPPV2Empty.h"
-#import "BYMAPPV2User.h"
+#import "BYMAPPV3Empty.h"
+#import "BYMAPPV3User.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  The service client object.
  */
-@interface BYMAPPV2BYMAPPClient: AWSAPIGatewayClient
+@interface BYMAPPV3BYMAPPClient: AWSAPIGatewayClient
 
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
@@ -59,13 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     let serviceClient = BYMAPPV2BYMAPPClient.defaultClient()
+     let serviceClient = BYMAPPV3BYMAPPClient.defaultClient()
 
  *Objective-C*
 
-     BYMAPPV2BYMAPPClient *serviceClient = [BYMAPPV2BYMAPPClient defaultClient];
+     BYMAPPV3BYMAPPClient *serviceClient = [BYMAPPV3BYMAPPClient defaultClient];
 
- Alternatively, this configuration could also be set in the `info.plist` file of your app under `AWS` dictionary with a configuration dictionary by name `BYMAPPV2BYMAPPClient`.
+ Alternatively, this configuration could also be set in the `info.plist` file of your app under `AWS` dictionary with a configuration dictionary by name `BYMAPPV3BYMAPPClient`.
 
  @return The default service client.
  */
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
      func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
          let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
          let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
-         BYMAPPV2BYMAPPClient.registerClientWithConfiguration(configuration, forKey: "USWest2BYMAPPV2BYMAPPClient")
+         BYMAPPV3BYMAPPClient.registerClientWithConfiguration(configuration, forKey: "USWest2BYMAPPV3BYMAPPClient")
 
          return true
      }
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
          AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2
                                                                               credentialsProvider:credentialsProvider];
 
-         [BYMAPPV2BYMAPPClient registerClientWithConfiguration:configuration forKey:@"USWest2BYMAPPV2BYMAPPClient"];
+         [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"USWest2BYMAPPV3BYMAPPClient"];
 
          return YES;
      }
@@ -103,11 +103,11 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     let serviceClient = BYMAPPV2BYMAPPClient(forKey: "USWest2BYMAPPV2BYMAPPClient")
+     let serviceClient = BYMAPPV3BYMAPPClient(forKey: "USWest2BYMAPPV3BYMAPPClient")
 
  *Objective-C*
 
-     BYMAPPV2BYMAPPClient *serviceClient = [BYMAPPV2BYMAPPClient clientForKey:@"USWest2BYMAPPV2BYMAPPClient"];
+     BYMAPPV3BYMAPPClient *serviceClient = [BYMAPPV3BYMAPPClient clientForKey:@"USWest2BYMAPPV3BYMAPPClient"];
 
  @warning After calling this method, do not modify the configuration object. It may cause unspecified behaviors.
 
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
      func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
          let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
          let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
-         BYMAPPV2BYMAPPClient.registerClientWithConfiguration(configuration, forKey: "USWest2BYMAPPV2BYMAPPClient")
+         BYMAPPV3BYMAPPClient.registerClientWithConfiguration(configuration, forKey: "USWest2BYMAPPV3BYMAPPClient")
 
          return true
      }
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
          AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2
                                                                               credentialsProvider:credentialsProvider];
 
-         [BYMAPPV2BYMAPPClient registerClientWithConfiguration:configuration forKey:@"USWest2BYMAPPV2BYMAPPClient"];
+         [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"USWest2BYMAPPV3BYMAPPClient"];
 
          return YES;
      }
@@ -148,11 +148,11 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     let serviceClient = BYMAPPV2BYMAPPClient(forKey: "USWest2BYMAPPV2BYMAPPClient")
+     let serviceClient = BYMAPPV3BYMAPPClient(forKey: "USWest2BYMAPPV3BYMAPPClient")
 
  *Objective-C*
 
-     BYMAPPV2BYMAPPClient *serviceClient = [BYMAPPV2BYMAPPClient clientForKey:@"USWest2BYMAPPV2BYMAPPClient"];
+     BYMAPPV3BYMAPPClient *serviceClient = [BYMAPPV3BYMAPPClient clientForKey:@"USWest2BYMAPPV3BYMAPPClient"];
 
  @param key A string to identify the service client.
 
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessB2clinkPut;
 
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessB2clinkDelete;
 
@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessExercicePut;
 
@@ -197,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessExerciceDelete;
 
@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessExerciceOptions;
 
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessProtocolPut;
 
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessProtocolDelete;
 
@@ -229,7 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessUserGet;
 
@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessUserPost;
 
@@ -245,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)businessUserDelete;
 
@@ -253,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiOptions;
 
@@ -261,7 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiB2clinkGet;
 
@@ -269,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiB2clinkPost;
 
@@ -277,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiB2clinkDelete;
 
@@ -286,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param exID 
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiExerciceGet:(nullable NSString *)exID;
 
@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiExercicePost;
 
@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiExerciceOptions;
 
@@ -310,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiGameGet;
 
@@ -318,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiLibraryGet;
 
@@ -326,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiLibraryOptions;
 
@@ -335,7 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param protocolID 
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiProtocolGet:(nullable NSString *)protocolID;
 
@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiProtocolOptions;
 
@@ -352,7 +352,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param thematicID 
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiThematicGet:(nullable NSString *)thematicID;
 
@@ -360,7 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiThematicOptions;
 
@@ -368,23 +368,24 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiUserGet;
 
 /**
  
  
+ @param body 
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
-- (AWSTask *)userapiUserPost;
+- (AWSTask *)userapiUserPost:( BYMAPPV3User *)body;
 
 /**
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiUserOptions;
 
@@ -392,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
 - (AWSTask *)userapiUserHead;
 
@@ -401,9 +402,17 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param body 
  
- return type: BYMAPPV2Empty *
+ return type: BYMAPPV3Empty *
  */
-- (AWSTask *)userapiUserV2Post:( BYMAPPV2User *)body;
+- (AWSTask *)userapiUserV2Post:( BYMAPPV3User *)body;
+
+/**
+ 
+ 
+ 
+ return type: BYMAPPV3Empty *
+ */
+- (AWSTask *)userapiUserV2Options;
 
 @end
 

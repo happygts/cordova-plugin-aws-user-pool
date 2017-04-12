@@ -14,13 +14,13 @@
  */
  
 
-#import "BYMAPPV2User.h"
+#import "BYMAPPV3Empty.h"
 
-@implementation BYMAPPV2User
+@implementation BYMAPPV3Empty
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
     return @{
-             @"userName": @"userName"
+
              };
 }
 

@@ -14,14 +14,18 @@
  */
  
 
-#import "BYMAPPV2Empty.h"
+#import <Foundation/Foundation.h>
+#import <AWSCore/AWSCore.h>
 
-@implementation BYMAPPV2Empty
+ 
+/**
+ A username
+ */
+@interface BYMAPPV3User : AWSModel
+/**
+ The username of an user 
+ */
+@property (nonatomic, strong, nonnull) NSString *userName;
 
-+ (NSDictionary *)JSONKeyPathsByPropertyKey {
-    return @{
-
-             };
-}
 
 @end

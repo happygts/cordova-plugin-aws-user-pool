@@ -15,13 +15,13 @@
  
 
 
-#import "BYMAPPV2BYMAPPClient.h"
+#import "BYMAPPV3BYMAPPClient.h"
 #import <AWSCore/AWSCore.h>
 #import <AWSCore/AWSSignature.h>
 #import <AWSCore/AWSSynchronizedMutableDictionary.h>
 
-#import "BYMAPPV2Empty.h"
-#import "BYMAPPV2User.h"
+#import "BYMAPPV3Empty.h"
+#import "BYMAPPV3User.h"
 
 @interface AWSAPIGatewayClient()
 
@@ -45,7 +45,7 @@
 
 @end
 
-@interface BYMAPPV2BYMAPPClient()
+@interface BYMAPPV3BYMAPPClient()
 
 @property (nonatomic, strong) AWSServiceConfiguration *configuration;
 
@@ -57,9 +57,9 @@
 
 @end
 
-@implementation BYMAPPV2BYMAPPClient
+@implementation BYMAPPV3BYMAPPClient
 
-static NSString *const AWSInfoClientKey = @"BYMAPPV2BYMAPPClient";
+static NSString *const AWSInfoClientKey = @"BYMAPPV3BYMAPPClient";
 
 @synthesize configuration = _configuration;
 
@@ -78,10 +78,10 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                                                            credentialsProvider:nil];
     }
 
-    static BYMAPPV2BYMAPPClient *_defaultClient = nil;
+    static BYMAPPV3BYMAPPClient *_defaultClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _defaultClient = [[BYMAPPV2BYMAPPClient alloc] initWithConfiguration:serviceConfiguration];
+        _defaultClient = [[BYMAPPV3BYMAPPClient alloc] initWithConfiguration:serviceConfiguration];
     });
 
     return _defaultClient;
@@ -92,13 +92,13 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     dispatch_once(&onceToken, ^{
         _serviceClients = [AWSSynchronizedMutableDictionary new];
     });
-    [_serviceClients setObject:[[BYMAPPV2BYMAPPClient alloc] initWithConfiguration:configuration]
+    [_serviceClients setObject:[[BYMAPPV3BYMAPPClient alloc] initWithConfiguration:configuration]
                         forKey:key];
 }
 
 + (instancetype)clientForKey:(NSString *)key {
     @synchronized(self) {
-        BYMAPPV2BYMAPPClient *serviceClient = [_serviceClients objectForKey:key];
+        BYMAPPV3BYMAPPClient *serviceClient = [_serviceClients objectForKey:key];
         if (serviceClient) {
             return serviceClient;
         }
@@ -108,7 +108,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         if (serviceInfo) {
             AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
                                                                                         credentialsProvider:serviceInfo.cognitoCredentialsProvider];
-            [BYMAPPV2BYMAPPClient registerClientWithConfiguration:serviceConfiguration
+            [BYMAPPV3BYMAPPClient registerClientWithConfiguration:serviceConfiguration
                                                     forKey:key];
         }
 
@@ -131,7 +131,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     if (self = [super init]) {
         _configuration = [configuration copy];
 
-        NSString *URLString = @"https://u1bi3yov1d.execute-api.eu-west-1.amazonaws.com/beta2";
+        NSString *URLString = @"https://u1bi3yov1d.execute-api.eu-west-1.amazonaws.com/beta";
         if ([URLString hasSuffix:@"/"]) {
             URLString = [URLString substringToIndex:[URLString length] - 1];
         }
@@ -168,7 +168,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessB2clinkDelete {
@@ -190,7 +190,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessExercicePut {
@@ -212,7 +212,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessExerciceDelete {
@@ -234,7 +234,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessExerciceOptions {
@@ -256,7 +256,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessProtocolPut {
@@ -278,7 +278,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessProtocolDelete {
@@ -300,7 +300,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessUserGet {
@@ -322,7 +322,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessUserPost {
@@ -344,7 +344,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)businessUserDelete {
@@ -366,7 +366,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiOptions {
@@ -388,7 +388,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiB2clinkGet {
@@ -410,7 +410,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiB2clinkPost {
@@ -432,7 +432,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiB2clinkDelete {
@@ -454,7 +454,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiExerciceGet:(NSString *)exID {
@@ -476,7 +476,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiExercicePost {
@@ -498,7 +498,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiExerciceOptions {
@@ -520,7 +520,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiGameGet {
@@ -542,7 +542,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiLibraryGet {
@@ -564,7 +564,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiLibraryOptions {
@@ -586,7 +586,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiProtocolGet:(NSString *)protocolID {
@@ -608,7 +608,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiProtocolOptions {
@@ -630,7 +630,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiThematicGet:(NSString *)thematicID {
@@ -652,7 +652,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiThematicOptions {
@@ -674,7 +674,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiUserGet {
@@ -696,10 +696,10 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
-- (AWSTask *)userapiUserPost {
+- (AWSTask *)userapiUserPost:(BYMAPPV3User *)body {
     NSDictionary *headerParameters = @{
                                        @"Content-Type": @"application/json",
                                        @"Accept": @"application/json",
@@ -717,8 +717,8 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                     pathParameters:pathParameters
                    queryParameters:queryParameters
                   headerParameters:headerParameters
-                              body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                              body:body
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiUserOptions {
@@ -740,7 +740,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 - (AWSTask *)userapiUserHead {
@@ -762,10 +762,10 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:nil
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
-- (AWSTask *)userapiUserV2Post:(BYMAPPV2User *)body {
+- (AWSTask *)userapiUserV2Post:(BYMAPPV3User *)body {
     NSDictionary *headerParameters = @{
                                        @"Content-Type": @"application/json",
                                        @"Accept": @"application/json",
@@ -784,7 +784,29 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    queryParameters:queryParameters
                   headerParameters:headerParameters
                               body:body
-                     responseClass:[BYMAPPV2Empty class]];
+                     responseClass:[BYMAPPV3Empty class]];
+}
+
+- (AWSTask *)userapiUserV2Options {
+    NSDictionary *headerParameters = @{
+                                       @"Content-Type": @"application/json",
+                                       @"Accept": @"application/json",
+                                       
+                                       };
+    NSDictionary *queryParameters = @{
+                                      
+                                      };
+    NSDictionary *pathParameters = @{
+                                     
+                                     };
+    
+    return [self invokeHTTPRequest:@"OPTIONS"
+                         URLString:@"/userapi/userV2"
+                    pathParameters:pathParameters
+                   queryParameters:queryParameters
+                  headerParameters:headerParameters
+                              body:nil
+                     responseClass:[BYMAPPV3Empty class]];
 }
 
 

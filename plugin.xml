@@ -32,12 +32,12 @@
         <source-file src="src/AwsUserPoolPlugin.m" />
         <source-file src="src/Reachability.m" />
 
-        <header-file src="vendor/BYMAPPV2BYMAPPClient.h" />
-        <header-file src="vendor/BYMAPPV2Empty.h" />
-        <source-file src="vendor/BYMAPPV2User.h" />
-        <source-file src="vendor/BYMAPPV2BYMAPPClient.m" />
-        <source-file src="vendor/BYMAPPV2Empty.m" />
-        <source-file src="vendor/BYMAPPV2User.m" />
+        <header-file src="vendor/BYMAPPV3BYMAPPClient.h" />
+        <header-file src="vendor/BYMAPPV3Empty.h" />
+        <header-file src="vendor/BYMAPPV3User.h" />
+        <source-file src="vendor/BYMAPPV3BYMAPPClient.m" />
+        <source-file src="vendor/BYMAPPV3Empty.m" />
+        <source-file src="vendor/BYMAPPV3User.m" />
 
 	</platform>
 </plugin>
