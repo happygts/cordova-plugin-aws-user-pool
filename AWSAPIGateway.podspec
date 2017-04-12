@@ -1,5 +1,6 @@
 Pod::Spec.new do |s|
-  s.name         = 'AWSCore'
+
+  s.name         = 'AWSAPIGateway'
   s.version      = '2.5.3'
   s.summary      = 'Amazon Web Services SDK for iOS.'
 
@@ -11,10 +12,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '8.0'
   s.source       = { :git => 'https://github.com/aws/aws-sdk-ios.git',
                      :tag => s.version}
-  s.frameworks   = 'UIKit', 'Foundation', 'SystemConfiguration'
-  s.libraries    = 'z', 'sqlite3'
   s.requires_arc = true
+  s.dependency 'AWSCore', '2.5.3'
 
-  s.source_files = 'AWSCore/*.{h,m}', 'AWSCore/**/*.{h,m}'
-  s.private_header_files = 'AWSCore/XMLDictionary/**/*.h', 'AWSCore/XMLWriter/**/*.h', 'AWSCore/FMDB/AWSFMDatabase+Private.h', 'AWSCore/Fabric/*.h', 'AWSCore/Mantle/extobjc/*.h', 'AWSCore/CognitoIdentity/AWSCognitoIdentity+Fabric.h'
+  s.source_files = 'AWSAPIGateway/*.{h,m}'
 end

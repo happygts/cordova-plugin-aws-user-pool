@@ -20,14 +20,24 @@
 		</config-file>
 
 		<!-- frameworks -->
-		<framework src="AWSCore" type="podspec" spec=">= 2.5.1" />
-		<framework src="AWSCognito" type="podspec" spec=">= 2.5.1" />
-		<framework src="AWSCognitoIdentityProvider" type="podspec" spec=">= 2.5.1" />
+		<framework src="AWSCore" type="podspec" spec=">= 2.5.3" />
+		<framework src="AWSCognito" type="podspec" spec=">= 2.5.3" />
+		<framework src="AWSCognitoIdentityProvider" type="podspec" spec=">= 2.5.3" />
+		<framework src="AWSLambda" type="podspec" spec=">= 2.5.3" />
+		<framework src="AWSAPIGateway" type="podspec" spec=">= 2.5.3" />
 	    <framework src="SystemConfiguration.framework" weak="true" />
 
         <header-file src="src/AwsUserPoolPlugin.h" />
         <header-file src="src/Reachability.h" />
         <source-file src="src/AwsUserPoolPlugin.m" />
         <source-file src="src/Reachability.m" />
+
+        <header-file src="vendor/BYMAPPV2BYMAPPClient.h" />
+        <header-file src="vendor/BYMAPPV2Empty.h" />
+        <source-file src="vendor/BYMAPPV2User.h" />
+        <source-file src="vendor/BYMAPPV2BYMAPPClient.m" />
+        <source-file src="vendor/BYMAPPV2Empty.m" />
+        <source-file src="vendor/BYMAPPV2User.m" />
+
 	</platform>
 </plugin>

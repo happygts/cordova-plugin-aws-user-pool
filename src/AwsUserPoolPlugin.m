@@ -72,6 +72,8 @@
 
         AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
         [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
+        
+        [BYMAPPV2BYMAPPClient registerClientWithConfiguration:configuration forKey:@"EUWest1BYMAPPV2BYMAPPClient"];
 
         self.syncClient = [AWSCognito defaultCognito];
 
@@ -369,7 +371,7 @@
         NSString *value = [self.dataset stringForKey:keyString];
 
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NetworkingError"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
@@ -398,7 +400,7 @@
 
         [self.dataset setString:valueString forKey:keyString];
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError"];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NetworkingError"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
@@ -417,4 +419,42 @@
         }
     }
 
+    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command {
+        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
+
+        BYMAPPV2User *user = [[BYMAPPV2User alloc] init];
+            user.userName = @"alexmoreau932Agmail.com";
+
+        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inside callAWSLambdaFunction");
+        // BYMAPPV2BYMAPPClient *apiInstance = [BYMAPPV2BYMAPPClient defaultClient];
+        BYMAPPV2BYMAPPClient *apiInstance = [BYMAPPV2BYMAPPClient clientForKey:@"EUWest1BYMAPPV2BYMAPPClient"];
+
+        NSMutableDictionary *params = [options objectForKey:@"params"];
+
+        [[apiInstance userapiUserV2Post:user] continueWithBlock:^id(AWSTask *task) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(task.error){
+                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
+                    // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                    // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                } else {
+                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!! result : %@", task.result);
+                    // CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+                    // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                }
+                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"test"];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            });
+            return nil;
+        }];
+    }
+
     @end
+
+
+
+
+
+
+
+

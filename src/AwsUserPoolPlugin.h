@@ -2,10 +2,22 @@
 
 #import "AWSCognitoIdentityProvider.h"
 #import <AWSCognito/AWSCognito.h>
+#import <AWSLambda/AWSLambda.h>
 
 #import <Foundation/Foundation.h>
 
 #import "Reachability.h"
+
+// #import <ApiClient.h>
+// #import <Configuration.h>
+
+// load models
+#import "BYMAPPV2Empty.h"
+#import "BYMAPPV2User.h"
+
+// load API classes for accessing endpoints
+#import "BYMAPPV2BYMAPPClient.h"
+
 
 	@interface AwsUserPoolPlugin : CDVPlugin
 
@@ -32,6 +44,7 @@
 	- (void)createAWSCognitoDataset:(CDVInvokedUrlCommand*) command;
 	- (void)getUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
     - (void)setUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
+    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command;
 
 	@end
 

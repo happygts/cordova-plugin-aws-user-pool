@@ -111,4 +111,13 @@ AwsUserPoolPlugin.prototype.setUserDataCognitoSync = function(config, successCal
 	}, "AwsUserPoolPlugin", "setUserDataCognitoSync", [config]);
 };
 
+AwsUserPoolPlugin.prototype.callAWSLambdaFunction = function(config, successCallback, errorCallback) {
+	cordova.exec(function(params) {
+		successCallback(params);
+	},
+	function(error) {
+		errorCallback(error);
+	}, "AwsUserPoolPlugin", "callAWSLambdaFunction", [config]);
+};
+
 module.exports = AwsUserPoolPlugin;
