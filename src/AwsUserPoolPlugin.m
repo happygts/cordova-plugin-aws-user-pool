@@ -177,13 +177,8 @@
             tmp.name  = [attributesIndex objectForKey:@"name"];
             tmp.value = [attributesIndex objectForKey:@"value"];
 
-            NSLog(@"Name : %@", tmp.name);
-            NSLog(@"Value : %@", tmp.value);
-
             [attributesToSend addObject:tmp];
         }
-
-        NSLog(@"Here");
 
         //sign up the user
         [[self.Pool signUp:idString password:passwordString userAttributes:attributesToSend validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
