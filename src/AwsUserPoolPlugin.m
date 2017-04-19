@@ -73,6 +73,7 @@
         AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
         [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
         
+        // Not generic BYMAPPV3BYMAPPClient is something from my application
         [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"EUWest1BYMAPPV3BYMAPPClient"];
 
         self.syncClient = [AWSCognito defaultCognito];
@@ -90,7 +91,7 @@
     - (void)offlineSignIn:(CDVInvokedUrlCommand*)command {
         /*
         // The SignIn will always return true, you need to manage the signin on the cordova side.
-        // This function is needed if you already signin your user with internet and you want him to access to his data
+        // This function is needed if you already signin your user with internet and you want him to access to his data even in offline mode
         */
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
@@ -117,6 +118,7 @@
         [[self.User getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
+                    NSLog("error : %@", task.error.userInfo);
                     MyManager *sharedManager = [MyManager sharedManager];
 
                     sharedManager.lastUsername = username;
@@ -135,7 +137,7 @@
                     [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if(task.error){
-                                NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error.userInfo);
+                                NSLog("error : %@", task.error.userInfo);
                                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                             } else {
@@ -187,6 +189,7 @@
         [[self.Pool signUp:idString password:passwordString userAttributes:attributesToSend validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
+                    NSLog(@"error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else{
@@ -217,7 +220,8 @@
         [[self.User confirmSignUp:tokenString forceAliasCreation:YES] continueWithBlock: ^id _Nullable(AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+                    NSLog(@"error : %@", task.error);
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"good token"];
@@ -240,7 +244,8 @@
         [[self.User forgotPassword] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserForgotPasswordResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+                    NSLog(@"error : %@", task.error);
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"good token"];
@@ -260,7 +265,8 @@
         [[self.User confirmForgotPassword:confirmationCode password:newPassword] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserConfirmForgotPasswordResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
+                    NSLog(@"error : %@", task.error);
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"good token"];
@@ -280,6 +286,7 @@
         [[defaultIdentityProvider getUser:request] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityProviderGetUserResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
+                    NSLog(@"error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
@@ -313,6 +320,7 @@
         [[self.User resendConfirmationCode] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserResendConfirmationCodeResponse *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
+                    NSLog(@"error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"message"]];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
@@ -351,7 +359,8 @@
             [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if(task.error){
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                        NSLog(@"error : %@", task.error);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     } else {
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
@@ -378,8 +387,8 @@
             [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if(task.error){
-                        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
+                        NSLog(@"error : %@", task.error);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     } else {
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
@@ -420,6 +429,11 @@
     }
 
     - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command {
+        /*
+        // Not generic yet, only work for me.
+        // Need to find a way to call function from the aws linked file
+        */
+
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
         NSString *username = [options objectForKey:@"username"];
@@ -427,18 +441,15 @@
         BYMAPPV3User *user = [[BYMAPPV3User alloc] init];
         user.userName = username;
 
-        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inside callAWSLambdaFunction");
         BYMAPPV3BYMAPPClient *apiInstance = [BYMAPPV3BYMAPPClient clientForKey:@"EUWest1BYMAPPV3BYMAPPClient"];
-
 
         [[apiInstance userapiUserPost:user] continueWithBlock:^id(AWSTask *task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error) {
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error : %@", task.error);
+                    NSLog(@"error : %@", task.error);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
-                    NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!! result : %@", task.result);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ok"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
