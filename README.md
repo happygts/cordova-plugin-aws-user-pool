@@ -1,4 +1,4 @@
-Version 0.1
+Version 1.0.0
 
 # Introduction to the plugin
 
@@ -62,7 +62,19 @@ awsUserPluginInstance.signIn({"username": Username, "password": password}, funct
 })
  ```
  
- 4) Using Federated Identity
+4) SignOut :
+
+ ```javascript
+awsUserPluginInstance.signOut({}, function(res) {
+  // Success
+}, function(err) {
+  // Error : err
+})
+ ```
+
+Will SignOut the last user connected
+
+ 5) Using Federated Identity
  
  After a successfull connection you will be able to create or to open a dataset :
  
@@ -99,7 +111,7 @@ awsUserPluginInstance.signIn({"username": Username, "password": password}, funct
 awsUserPluginInstance.setUserDataCognitoSync({"key": "yourKey", "value": JSON.stringify(obj)}, callback, errCallback);
 ```
  
- 5) Update password :
+ 6) Update password :
 
 ```javascript
 this.awsUserPluginInstance.updatePassword({"confirmationCode": "123456", "newPassword": "newPassword"}, function(res) {

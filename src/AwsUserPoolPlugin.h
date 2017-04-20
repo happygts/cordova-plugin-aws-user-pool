@@ -31,6 +31,7 @@
  	- (void)init:(CDVInvokedUrlCommand*)command;
 	- (void)signIn:(CDVInvokedUrlCommand*)command;
 	- (void)offlineSignIn:(CDVInvokedUrlCommand*)command;
+	- (void)signOut:(CDVInvokedUrlCommand *)command;
 	- (void)signUp:(CDVInvokedUrlCommand*)command;
 	- (void)confirmSignUp:(CDVInvokedUrlCommand*)command;
 	- (void)forgotPassword:(CDVInvokedUrlCommand*)command;

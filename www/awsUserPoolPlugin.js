@@ -30,6 +30,15 @@ AwsUserPoolPlugin.prototype.offlineSignIn = function(config, successCallback, er
 	}, "AwsUserPoolPlugin", "offlineSignIn", [config]);
 };
 
+AwsUserPoolPlugin.prototype.signOut = function(config, successCallback, errorCallback) {
+	cordova.exec(function(params) {
+		successCallback(params);
+	},
+	function(error) {
+		errorCallback(error);
+	}, "AwsUserPoolPlugin", "signOut", [config]);
+};
+
 AwsUserPoolPlugin.prototype.signUp = function(config, successCallback, errorCallback) {
 	cordova.exec(function(params) {
 		successCallback(params);
