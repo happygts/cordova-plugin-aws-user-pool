@@ -118,7 +118,7 @@
         [[self.User getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(task.error){
-                    NSLog("error : %@", task.error.userInfo);
+                    NSLog(@"error : %@", task.error.userInfo);
                     MyManager *sharedManager = [MyManager sharedManager];
 
                     sharedManager.lastUsername = username;
@@ -137,7 +137,7 @@
                     [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if(task.error){
-                                NSLog("error : %@", task.error.userInfo);
+                                NSLog(@"error : %@", task.error.userInfo);
                                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                             } else {
@@ -155,6 +155,24 @@
             });
             return nil;
         }];
+    }
+
+    - (void)signOut:(CDVInvokedUrlCommand *)command {
+        if ([self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]])
+            self.User = [self.Pool currentUser];
+        if (![self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]) {
+            [self.User signOut];
+            NSLog(@"Signout Ok");
+
+            self.User = nil;
+
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];           
+        }
     }
 
     - (void)signUp:(CDVInvokedUrlCommand*)command{
