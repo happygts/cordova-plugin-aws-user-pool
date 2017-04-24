@@ -158,19 +158,19 @@
     }
 
     - (void)signOut:(CDVInvokedUrlCommand *)command {
-        if ([self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]])
-            self.User = [self.Pool currentUser];
+        self.User = [self.Pool currentUser];
+
         if (![self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]) {
             [self.User signOut];
-            NSLog(@"Signout Ok");
+            AWSCognitoIdentityProvider *defaultIdentityProvider = [AWSCognitoIdentityProvider defaultCognitoIdentityProvider];
 
-            self.User = nil;
-
+            [self.credentialsProvider clearCredentials];
+            
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
-             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];           
         }
     }
