@@ -158,19 +158,19 @@
     }
 
     - (void)signOut:(CDVInvokedUrlCommand *)command {
-        if ([self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]])
-            self.User = [self.Pool currentUser];
+        self.User = [self.Pool currentUser];
+
         if (![self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]) {
             [self.User signOut];
-            NSLog(@"Signout Ok");
+            AWSCognitoIdentityProvider *defaultIdentityProvider = [AWSCognitoIdentityProvider defaultCognitoIdentityProvider];
 
-            self.User = nil;
-
+            [self.credentialsProvider clearCredentials];
+            
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
-             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];           
         }
     }
@@ -371,7 +371,12 @@
         else {
             [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if(task.error){
+                    if (task.isCancelled) {
+                        NSLog(@"isCancelled : %@", task.isCancelled);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Canceled"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                    else if(task.error){
                         NSLog(@"error : %@", task.error);
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -393,17 +398,24 @@
         NSString *value = [self.dataset stringForKey:keyString];
 
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NetworkingError"];
+            NSLog(@"getUserDataCognitoSync failed NetworkingError");
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
             [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if(task.error){
-                        NSLog(@"error : %@", task.error);
+                    if (task.isCancelled) {
+                        NSLog(@"getUserDataCognitoSync isCancelled : %@", task.isCancelled);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Canceled"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                    else if(task.error){
+                        NSLog(@"getUserDataCognitoSync error : %@", task.error);
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     } else {
+                        NSLog(@"getUserDataCognitoSync success : %@", value);
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     }
@@ -428,7 +440,12 @@
         else {
             [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if(task.error){
+                    if (task.isCancelled) {
+                        NSLog(@"isCancelled : %@", task.isCancelled);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Canceled"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                    else if(task.error){
                         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error"];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     } else {
