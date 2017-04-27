@@ -434,7 +434,7 @@
 
         [self.dataset setString:valueString forKey:keyString];
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NetworkingError"];
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError, data saved localy"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
