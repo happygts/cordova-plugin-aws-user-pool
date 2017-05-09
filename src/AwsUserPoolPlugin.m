@@ -27,8 +27,6 @@
 
     @implementation AWSCognitoIdentityUserPool (UserPoolsAdditions)
 
-    static AWSSynchronizedMutableDictionary *_serviceClients = nil;
-
     - (AWSTask<NSString *> *)token {        
         MyManager *sharedManager = [MyManager sharedManager];
 
@@ -45,6 +43,9 @@
 	AWSRegionType const CognitoIdentityUserPoolRegion = AWSRegionEUWest1;
 
     - (void)init:(CDVInvokedUrlCommand*)command{
+        [AWSDDLog sharedInstance].logLevel = AWSDDLogLevelVerbose;
+        [AWSDDLog addLogger:[AWSDDTTYLogger sharedInstance]];
+
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
@@ -76,8 +77,8 @@
         // Not generic BYMAPPV3BYMAPPClient is something from my application
         [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"EUWest1BYMAPPV3BYMAPPClient"];
 
-        self.syncClient = [AWSCognito defaultCognito];
-
+        //self.syncClient = [AWSCognito defaultCognito];
+        [AWSCognito registerCognitoWithConfiguration:configuration forKey:@"CognitoSync"];
         MyManager *sharedManager = [MyManager sharedManager];
 
         sharedManager.lastUsername = @"";
@@ -134,16 +135,15 @@
                     sharedManager.lastUsername = username;
                     sharedManager.lastPassword = password;
 
+                    NSLog(@"!!!!!!!!!!! getIdentityId will start inside signIn");
                     [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if(task.error){
-                                NSLog(@"error : %@", task.error.userInfo);
+                                NSLog(@"!!!!!!!!!!! getIdentityId inside signIn, error : %@", task.error.userInfo);
                                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                             } else {
-                                NSString *keyString = [options objectForKey:@"key"];
-
-                                NSString *value = [self.dataset stringForKey:keyString];
+                                NSLog(@"!!!!!!!!!!! getIdentityId inside signIn, task.result : %@", task.result);
 
                                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
                                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -161,13 +161,33 @@
         self.User = [self.Pool currentUser];
 
         if (![self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]) {
-            [self.User signOut];
-            AWSCognitoIdentityProvider *defaultIdentityProvider = [AWSCognitoIdentityProvider defaultCognitoIdentityProvider];
+            NSLog(@"!!!!!!!!!!! getIdentityId will start inside signOut");
+            [[self.credentialsProvider getIdentityId] continueWithBlock:^id _Nullable(AWSTask<NSString *> * _Nonnull task) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(task.error){
+                        NSLog(@"!!!!!!!!!!! getIdentityId inside SignOut, error : %@", task.error.userInfo);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo[@"NSLocalizedDescription"]];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    } else {
+                        NSLog(@"!!!!!!!!!!! getIdentityId inside SignOut, task.result : %@", task.result);
 
-            [self.credentialsProvider clearCredentials];
-            
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignIn successful"];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                        [self.User signOut];
+
+                        [self.credentialsProvider clearKeychain];
+
+                        MyManager *sharedManager = [MyManager sharedManager];
+
+                        sharedManager.lastUsername = @"";
+                        sharedManager.lastPassword = @"";
+
+                        self.dataset = nil;
+
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"SignOut successful"];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    }
+                });
+                return nil;
+            }];
         }
         else {
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
@@ -357,32 +377,63 @@
         NSString *idString = [options objectForKey:@"id"];
         NSString *cognitoId = self.credentialsProvider.identityId;
 
-        self.dataset = [[AWSCognito defaultCognito] openOrCreateDataset:idString];
+        NSLog(@"createAWSCognitoDataset idString : %@", idString);
+        NSLog(@"createAWSCognitoDataset cognitoId : %@", cognitoId);
 
-        self.dataset.conflictHandler = ^AWSCognitoResolvedConflict* (NSString *datasetName, AWSCognitoConflict *conflict) {
-            // override and always choose remote changes
-            return [conflict resolveWithRemoteRecord];
-        };
-        
+        AWSCognito *syncClient = [AWSCognito CognitoForKey:@"CognitoSync"];
+
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
+            self.dataset = [syncClient openOrCreateDataset:idString];
+
+            self.dataset.conflictHandler = ^AWSCognitoResolvedConflict* (NSString *datasetName, AWSCognitoConflict *conflict) {
+                // override and always choose remote changes
+                return [conflict resolveWithRemoteRecord];
+            };
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
-            [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+            [[syncClient refreshDatasetMetadata] continueWithBlock:^id(AWSTask *task) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (task.isCancelled) {
-                        NSLog(@"isCancelled : %@", task.isCancelled);
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Canceled"];
+                    if (task.error){
+                        NSLog(@"createAWSCognitoDataset refreshDatasetMetadata error : %@", task.error);
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error];
                         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                     }
-                    else if(task.error){
-                        NSLog(@"error : %@", task.error);
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
-                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                    } else {
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
-                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                    else {
+                        NSLog(@"createAWSCognitoDataset refreshDatasetMetadata success : %@", task.result);
+                        self.dataset = [syncClient openOrCreateDataset:idString];
+
+                        self.dataset.conflictHandler = ^AWSCognitoResolvedConflict* (NSString *datasetName, AWSCognitoConflict *conflict) {
+                            // override and always choose remote changes
+                            return [conflict resolveWithRemoteRecord];
+                        };
+                        
+                        if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
+                            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"NetworkingError"];
+                            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                        }
+                        else {
+                            [[self.dataset synchronize] continueWithBlock:^id(AWSTask *task) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (task.isCancelled) {
+                                        NSLog(@"createAWSCognitoDataset isCancelled : %@", task.isCancelled);
+                                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Canceled"];
+                                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                    }
+                                    else if(task.error){
+                                        NSLog(@"createAWSCognitoDataset error : %@", task.error);
+                                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
+                                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                    } else {
+                                        NSLog(@"createAWSCognitoDataset success : %@", task.result);
+                                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"createAWSCognitoDataset Successful"];
+                                        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                    }
+                                });
+                                return nil;
+                            }];
+                        }
                     }
                 });
                 return nil;
@@ -396,6 +447,9 @@
         NSString *keyString = [options objectForKey:@"key"];
 
         NSString *value = [self.dataset stringForKey:keyString];
+
+        NSLog(@"getUserDataCognitoSync, value : %@", value);
+        NSLog(@"getUserDataCognitoSync, keyString: %@", keyString);
 
         if ([[Reachability reachabilityForInternetConnection]currentReachabilityStatus] == NotReachable) {
             NSLog(@"getUserDataCognitoSync failed NetworkingError");
