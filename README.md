@@ -1,4 +1,4 @@
-Version 1.0.2
+Version 1.0.3
 
 # Introduction to the plugin
 
@@ -120,3 +120,12 @@ this.awsUserPluginInstance.updatePassword({"confirmationCode": "123456", "newPas
   // Error
 })
 ``` 
+
+
+# Framework versions
+
+    <framework src="AWSCore" type="podspec" spec=">= 2.5.3" />
+    <framework src="AWSCognito" type="podspec" spec=">= 2.5.3" />
+    <framework src="AWSCognitoIdentityProvider" type="podspec" spec=">= 2.5.3" />
+    <framework src="AWSLambda" type="podspec" spec=">= 2.5.3" />
+    <framework src="AWSAPIGateway" type="podspec" spec=">= 2.5.3" />
