@@ -8,13 +8,6 @@
 
 #import "Reachability.h"
 
-// #import <ApiClient.h>
-// #import <Configuration.h>
-
-// load API classes for accessing endpoints
-#import "BYMAPPV3BYMAPPClient.h"
-
-
 	@interface AwsUserPoolPlugin : CDVPlugin
 
 	@property NSString *CognitoIdentityUserPoolId;

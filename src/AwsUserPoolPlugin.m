@@ -73,9 +73,6 @@
 
         AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
         [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-        
-        // Not generic BYMAPPV3BYMAPPClient is something from my application
-        [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"EUWest1BYMAPPV3BYMAPPClient"];
 
         //self.syncClient = [AWSCognito defaultCognito];
         [AWSCognito registerCognitoWithConfiguration:configuration forKey:@"CognitoSync"];
@@ -510,36 +507,6 @@
                 return nil;
             }];
         }
-    }
-
-    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command {
-        /*
-        // Not generic yet, only work for me.
-        // Need to find a way to call function from the aws linked file
-        */
-
-        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
-
-        NSString *username = [options objectForKey:@"username"];
-
-        BYMAPPV3User *user = [[BYMAPPV3User alloc] init];
-        user.userName = username;
-
-        BYMAPPV3BYMAPPClient *apiInstance = [BYMAPPV3BYMAPPClient clientForKey:@"EUWest1BYMAPPV3BYMAPPClient"];
-
-        [[apiInstance userapiUserPost:user] continueWithBlock:^id(AWSTask *task) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(task.error) {
-                    NSLog(@"error : %@", task.error);
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ok"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-            });
-            return nil;
-        }];
     }
 
     @end
