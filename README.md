@@ -20,13 +20,13 @@ For example in some versions of Ios it's not possible to create an account, the 
  1) Initialisation :
  
  ```javascript
-   this.cognitoIdentityUserPoolId = "eu-west-1_*********";
-   this.cognitoIdentityUserPoolAppClientId = "*********************";
+   this.CognitoIdentityUserPoolId = "eu-west-1_*********";
+   this.CognitoIdentityUserPoolAppClientId = "*********************";
    this.CognitoIdentityUserPoolAppClientSecret = "************************";
    this.CognitoArnIdentityPoolId = "eu-west-1:********-****-****-****-************";
 
-   var awsUserPluginInstance = new AwsUserPoolPlugin({"CognitoIdentityUserPoolId": ,
-      "CognitoIdentityUserPoolAppClientId": this.cognitoIdentityUserPoolAppClientId,
+   var awsUserPluginInstance = new AwsUserPoolPlugin({"CognitoIdentityUserPoolId": this.CognitoIdentityUserPoolId,
+      "CognitoIdentityUserPoolAppClientId": this.CognitoIdentityUserPoolAppClientId,
       "CognitoIdentityUserPoolAppClientSecret": this.CognitoIdentityUserPoolAppClientSecret,
       "arnIdentityPoolId": this.CognitoArnIdentityPoolId}, function() {
       console.log("connectionPluginInstance Init Ok");
@@ -52,6 +52,26 @@ For example in some versions of Ios it's not possible to create an account, the 
  
  The Id must be unique, usually I use the email adress and change the @ with an A.
  
+ Confirm signUp :
+  
+  ```javascript
+  awsUserPluginInstance.confirmSignUp({"id": username, "token": token}, function(res) {
+    console.log("User confirmed, you can now signin");
+  }, function(err) {
+    console.log("err :", err.message);
+  });
+  ```
+
+  Resend confirmation code :
+
+  ```javascript
+  this.awsUserPluginInstance.resendConfirmationCode({"id": username}, function(res) {
+      success();
+  }, function(err) {
+      error(err);
+  });
+  ```
+
  3) SignIn :
  
  ```javascript
