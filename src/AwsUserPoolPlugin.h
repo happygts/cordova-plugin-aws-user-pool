@@ -34,7 +34,6 @@
 	- (void)createAWSCognitoDataset:(CDVInvokedUrlCommand*) command;
 	- (void)getUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
     - (void)setUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
-    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command;
 
 	@end
 

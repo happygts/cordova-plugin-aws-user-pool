@@ -28,22 +28,35 @@
             * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
                 * Enable inline JS: add 'unsafe-inline' to default-src
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data:* gap://* tel:* 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'" />
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <title>Hello World</title>
-    </head>
-    <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body class="body" id="deviceready">
+        <div class="topRight">
+            <input type="button" id="topSwitchButton" value="signUp" onclick="app.switch()"/>
+        </div>
+        <div id="loginRegisterDiv">
+            <div class="app">
+                <input type="email" id="email" placeholder="email"/>
+                <br>
+                <input type="password" id="password" placeholder="password"/>
+                <br>
+                <input type="button" id="buttonValidate" value="Connect" onclick="app.validate()"/>
+            </div>
+        </div>
+        <div id="dataDiv">
+            <div class="app">
+                <input type="text" id="dataToChange"/>
+                <br>
+                <input type="button" value="Save data" onclick="app.saveData()"/>                
+            </div>
+        </div>
     </body>
 </html>

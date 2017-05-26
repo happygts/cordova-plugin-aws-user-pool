@@ -12,12 +12,13 @@
     "dependencies": {
         "cordova-ios": "^4.4.0",
         "cordova-plugin-aws-user-pool": "file:../..",
-        "cordova-plugin-whitelist": "^1.3.2",
-        "ios": "0.0.1"
+        "cordova-plugin-console": "^1.0.7",
+        "cordova-plugin-whitelist": "^1.3.2"
     },
     "cordova": {
         "plugins": {
             "cordova-plugin-whitelist": {},
+            "cordova-plugin-console": {},
             "cordova-plugin-aws-user-pool": {}
         },
         "platforms": [

@@ -51,8 +51,8 @@
 		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
 		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
 		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
-        if(!self.CognitoIdentityUserPoolAppClientSecret || [self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]
-            || self.CognitoIdentityUserPoolAppClientSecret.length)
+        if([self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]
+            || self.CognitoIdentityUserPoolAppClientSecret.length == 0)
             self.CognitoIdentityUserPoolAppClientSecret = nil;
         self.User = nil;
         self.actualAccessToken = nil;
@@ -184,7 +184,7 @@
                     }
                 });
                 return nil;
-            }];
+            }]  ;
         }
         else {
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];

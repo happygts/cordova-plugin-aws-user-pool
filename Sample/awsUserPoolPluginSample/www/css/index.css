@@ -59,6 +59,20 @@ body {
                                    /* offset horizontal: half of text area width */
 }
 
+.app input {
+    display: block;
+    text-align: center;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.topRight {
+    position: absolute;
+    top: 5%;
+    right: 10%;
+}
+
 /* Landscape layout (with min-width) */
 @media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
     .app {
