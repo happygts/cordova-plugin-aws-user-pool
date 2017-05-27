@@ -15,6 +15,10 @@ For example in some versions of Ios it's not possible to create an account, the 
   * Use CognitoSync linked with your userPool
     - get/set data for a user with Federated Identity
 
+# Sample :
+
+[Sample' Readme](https://github.com/moreaup/cordova-plugin-aws-user-pool/tree/master/Sample/awsUserPoolPluginSample/README.md)
+
 # Usage
 
  1) Initialisation :
