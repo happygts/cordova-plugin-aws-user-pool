@@ -8,15 +8,9 @@
 
 #import "Reachability.h"
 
-// #import <ApiClient.h>
-// #import <Configuration.h>
-
-// load API classes for accessing endpoints
-#import "BYMAPPV3BYMAPPClient.h"
-
-
 	@interface AwsUserPoolPlugin : CDVPlugin
 
+	@property AWSRegionType CognitoIdentityUserPoolRegion;
 	@property NSString *CognitoIdentityUserPoolId;
 	@property NSString *CognitoIdentityUserPoolAppClientId;
 	@property NSString *CognitoIdentityUserPoolAppClientSecret;
@@ -41,7 +35,6 @@
 	- (void)createAWSCognitoDataset:(CDVInvokedUrlCommand*) command;
 	- (void)getUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
     - (void)setUserDataCognitoSync:(CDVInvokedUrlCommand*) command;
-    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command;
 
 	@end
 

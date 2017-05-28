@@ -1,0 +1,33 @@
+{
+  "name": "cordova-plugin-aws-user-pool",
+  "version": "1.0.3",
+  "description": "This plugin will allow a native communication with the aws userPool",
+  "cordova": {
+    "id": "cordova-plugin-aws-user-pool",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moreaup/cordova-plugin-aws-user-pool.git"
+  },
+  "keywords": [
+    "aws",
+    "userPool",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.7.0"
+    }
+  ],
+  "author": "Alexandre Moreau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moreaup/cordova-plugin-aws-user-pool/issues"
+  },
+  "homepage": "https://github.com/moreaup/cordova-plugin-aws-user-pool#readme"
+}

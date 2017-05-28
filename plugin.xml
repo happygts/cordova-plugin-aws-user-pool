@@ -1,7 +1,8 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	id="cordova-plugin-aws-user-pool" version="0.1">
+	id="cordova-plugin-aws-user-pool" version="1.0">
 	<name>Aws UserPool sdk</name>
 	<description>This plugin will allow a native communication with the aws userPool</description>
 	<keywords>aws, userPool</keywords>
@@ -31,13 +32,6 @@
         <header-file src="src/Reachability.h" />
         <source-file src="src/AwsUserPoolPlugin.m" />
         <source-file src="src/Reachability.m" />
-
-        <header-file src="vendor/BYMAPPV3BYMAPPClient.h" />
-        <header-file src="vendor/BYMAPPV3Empty.h" />
-        <header-file src="vendor/BYMAPPV3User.h" />
-        <source-file src="vendor/BYMAPPV3BYMAPPClient.m" />
-        <source-file src="vendor/BYMAPPV3Empty.m" />
-        <source-file src="vendor/BYMAPPV3User.m" />
 
 	</platform>
 </plugin>
