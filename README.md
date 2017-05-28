@@ -1,4 +1,4 @@
-Version 1.0.3
+Version 1.1.0
 
 # Introduction to the plugin
 
@@ -32,7 +32,7 @@ For example in some versions of Ios it's not possible to create an account, the 
    var awsUserPluginInstance = new AwsUserPoolPlugin({"CognitoIdentityUserPoolId": this.CognitoIdentityUserPoolId,
       "CognitoIdentityUserPoolAppClientId": this.CognitoIdentityUserPoolAppClientId,
       "CognitoIdentityUserPoolAppClientSecret": this.CognitoIdentityUserPoolAppClientSecret,
-      "arnIdentityPoolId": this.CognitoArnIdentityPoolId}, function() {
+      "arnIdentityPoolId": this.CognitoArnIdentityPoolId, "CognitoRegion": AwsUserPoolPlugin.AwsUserPoolPluginEnum.EuWest1}, function() {
       console.log("connectionPluginInstance Init Ok");
   }, function() {
       console.log("connectionPluginInstance Init Fail");
