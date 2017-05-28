@@ -12,6 +12,22 @@ var AwsUserPoolPlugin = function(config, successCallback, errorCallback) {
 	}, "AwsUserPoolPlugin", "init", [config]);
 };
 
+AwsUserPoolPlugin.AwsUserPoolPluginEnum = {
+	RegionUnknown: 0,
+	UsEast1: 1,
+	UsEast2: 2,
+	UsWest1: 3,
+	UsWest2: 4,
+	ApSouth1: 5,
+	ApNortheast1: 6,
+	ApNortheast2: 7,
+	ApSoutheast1: 8,
+	ApSoutheast2: 9,
+	EuCentral1: 10,
+	EuWest1: 11,
+	EuWest2: 12
+}
+
 AwsUserPoolPlugin.prototype.signIn = function(config, successCallback, errorCallback) {
 	cordova.exec(function(params) {
 		successCallback(params);

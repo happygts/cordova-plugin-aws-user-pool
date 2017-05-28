@@ -40,19 +40,63 @@
 
     @implementation AwsUserPoolPlugin
 
-	AWSRegionType const CognitoIdentityUserPoolRegion = AWSRegionEUWest1;
-
     - (void)init:(CDVInvokedUrlCommand*)command{
         [AWSDDLog sharedInstance].logLevel = AWSDDLogLevelVerbose;
         [AWSDDLog addLogger:[AWSDDTTYLogger sharedInstance]];
 
         NSMutableDictionary* options = [command.arguments objectAtIndex:0];
 
-		self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
-		self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
-		self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
-        if(!self.CognitoIdentityUserPoolAppClientSecret || [self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]
-            || self.CognitoIdentityUserPoolAppClientSecret.length)
+        self.CognitoIdentityUserPoolId = [options objectForKey:@"CognitoIdentityUserPoolId"];
+        self.CognitoIdentityUserPoolAppClientId = [options objectForKey:@"CognitoIdentityUserPoolAppClientId"];
+        self.CognitoIdentityUserPoolAppClientSecret = [options objectForKey:@"CognitoIdentityUserPoolAppClientSecret"];
+        
+        switch ([[options objectForKey:@"CognitoRegion"] intValue])
+        {
+            case 0:
+                self.CognitoIdentityUserPoolRegion = AWSRegionUnknown;
+                break;
+            case 1:
+                self.CognitoIdentityUserPoolRegion = AWSRegionUSEast1;
+                break;
+            case 2:
+                self.CognitoIdentityUserPoolRegion = AWSRegionUSEast2;
+                break;
+            case 3:
+                self.CognitoIdentityUserPoolRegion = AWSRegionUSWest1;
+                break;
+            case 4:
+                self.CognitoIdentityUserPoolRegion = AWSRegionUSWest2;
+                break;
+            case 5:
+                self.CognitoIdentityUserPoolRegion = AWSRegionAPSouth1;
+                break;
+            case 6:
+                self.CognitoIdentityUserPoolRegion = AWSRegionAPNortheast1;
+                break;
+            case 7:
+                self.CognitoIdentityUserPoolRegion = AWSRegionAPNortheast2;
+                break;
+            case 8:
+                self.CognitoIdentityUserPoolRegion = AWSRegionAPSoutheast1;
+                break;
+            case 9:
+                self.CognitoIdentityUserPoolRegion = AWSRegionAPSoutheast2;
+                break;
+            case 10:
+                self.CognitoIdentityUserPoolRegion = AWSRegionEUCentral1;
+                break;
+            case 11:
+                self.CognitoIdentityUserPoolRegion = AWSRegionEUWest1;
+                break;
+            case 12:
+                self.CognitoIdentityUserPoolRegion = AWSRegionEUWest2;
+                break;
+            default:
+                self.CognitoIdentityUserPoolRegion = -1;
+        }
+        
+        if([self.CognitoIdentityUserPoolAppClientSecret isKindOfClass:[NSNull class]]
+            || self.CognitoIdentityUserPoolAppClientSecret.length == 0)
             self.CognitoIdentityUserPoolAppClientSecret = nil;
         self.User = nil;
         self.actualAccessToken = nil;
@@ -61,7 +105,7 @@
 
         self.credentialsProvider = nil;
 
-        AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:nil];
+        AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:self.CognitoIdentityUserPoolRegion credentialsProvider:nil];
 
         AWSCognitoIdentityUserPoolConfiguration *userPoolConfiguration = [[AWSCognitoIdentityUserPoolConfiguration alloc] initWithClientId:self.CognitoIdentityUserPoolAppClientId clientSecret:self.CognitoIdentityUserPoolAppClientSecret poolId:self.CognitoIdentityUserPoolId];
 
@@ -69,13 +113,10 @@
 
         self.Pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
 
-        self.credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:CognitoIdentityUserPoolRegion identityPoolId:self.arnIdentityPoolId identityProviderManager:self.Pool];
+        self.credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:self.CognitoIdentityUserPoolRegion identityPoolId:self.arnIdentityPoolId identityProviderManager:self.Pool];
 
-        AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
+        AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:self.CognitoIdentityUserPoolRegion credentialsProvider:self.credentialsProvider];
         [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-        
-        // Not generic BYMAPPV3BYMAPPClient is something from my application
-        [BYMAPPV3BYMAPPClient registerClientWithConfiguration:configuration forKey:@"EUWest1BYMAPPV3BYMAPPClient"];
 
         //self.syncClient = [AWSCognito defaultCognito];
         [AWSCognito registerCognitoWithConfiguration:configuration forKey:@"CognitoSync"];
@@ -84,10 +125,20 @@
         sharedManager.lastUsername = @"";
         sharedManager.lastPassword = @"";
 
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
+        if (self.CognitoIdentityUserPoolRegion == -1) {
+            NSLog(@"Error, you need to set region");
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"You need to set region"];
 
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];            
+        }
+        else {
+            NSLog(@"Initialization successful");
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization successful"];
+
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
     }
+
 
     - (void)offlineSignIn:(CDVInvokedUrlCommand*)command {
         /*
@@ -187,7 +238,7 @@
                     }
                 });
                 return nil;
-            }];
+            }]  ;
         }
         else {
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No user connected"];
@@ -510,36 +561,6 @@
                 return nil;
             }];
         }
-    }
-
-    - (void)callAWSLambdaFunction:(CDVInvokedUrlCommand*) command {
-        /*
-        // Not generic yet, only work for me.
-        // Need to find a way to call function from the aws linked file
-        */
-
-        NSMutableDictionary* options = [command.arguments objectAtIndex:0];
-
-        NSString *username = [options objectForKey:@"username"];
-
-        BYMAPPV3User *user = [[BYMAPPV3User alloc] init];
-        user.userName = username;
-
-        BYMAPPV3BYMAPPClient *apiInstance = [BYMAPPV3BYMAPPClient clientForKey:@"EUWest1BYMAPPV3BYMAPPClient"];
-
-        [[apiInstance userapiUserPost:user] continueWithBlock:^id(AWSTask *task) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(task.error) {
-                    NSLog(@"error : %@", task.error);
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:task.error.userInfo];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ok"];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                }
-            });
-            return nil;
-        }];
     }
 
     @end
