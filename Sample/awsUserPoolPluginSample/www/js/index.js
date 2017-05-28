@@ -45,10 +45,12 @@ var app = {
         document.getElementById("loginRegisterDiv").style.display = "block";
         document.getElementById("dataDiv").style.display = "none";
 
+        var CognitoRegion = AwsUserPoolPlugin.AwsUserPoolPluginEnum.EuWest1;
+
         this.awsUserPluginInstance = new AwsUserPoolPlugin({"CognitoIdentityUserPoolId": this.CognitoIdentityUserPoolId,
             "CognitoIdentityUserPoolAppClientId": this.CognitoIdentityUserPoolAppClientId,
             "CognitoIdentityUserPoolAppClientSecret": this.CognitoIdentityUserPoolAppClientSecret,
-            "arnIdentityPoolId": this.CognitoArnIdentityPoolId}, function() {
+            "arnIdentityPoolId": this.CognitoArnIdentityPoolId, "CognitoRegion": CognitoRegion}, function() {
             console.log("connectionPluginInstance Init Ok");
         }, function() {
             console.log("connectionPluginInstance Init Fail");

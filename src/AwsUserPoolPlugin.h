@@ -10,6 +10,7 @@
 
 	@interface AwsUserPoolPlugin : CDVPlugin
 
+	@property AWSRegionType CognitoIdentityUserPoolRegion;
 	@property NSString *CognitoIdentityUserPoolId;
 	@property NSString *CognitoIdentityUserPoolAppClientId;
 	@property NSString *CognitoIdentityUserPoolAppClientSecret;
