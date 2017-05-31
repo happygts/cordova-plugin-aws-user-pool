@@ -2,7 +2,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	id="cordova-plugin-aws-user-pool" version="1.0">
+	id="cordova-plugin-aws-user-pool" version="1.1.0">
 	<name>Aws UserPool sdk</name>
 	<description>This plugin will allow a native communication with the aws userPool</description>
 	<keywords>aws, userPool</keywords>

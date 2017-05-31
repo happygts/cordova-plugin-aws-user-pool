@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-aws-user-pool",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "This plugin will allow a native communication with the aws userPool",
   "cordova": {
     "id": "cordova-plugin-aws-user-pool",
