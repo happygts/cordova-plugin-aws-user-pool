@@ -21,7 +21,7 @@ For example in some versions of Ios it's not possible to create an account, the 
 
 # Usage
 
- 1) Instalation :
+ 1) Installation :
  
  `cordova plugin add cordova-plugin-aws-user-pool`
 
