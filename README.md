@@ -21,7 +21,11 @@ For example in some versions of Ios it's not possible to create an account, the 
 
 # Usage
 
- 1) Initialisation :
+ 1) Instalation :
+ 
+ `cordova plugin add cordova-plugin-aws-user-pool`
+
+ 2) Initialisation :
  
  ```javascript
    this.CognitoIdentityUserPoolId = "eu-west-1_*********";
@@ -43,7 +47,7 @@ For example in some versions of Ios it's not possible to create an account, the 
  
  The arnIdentityPoolId is here if you use Federated Identity to store data and synchronise them with CognitoSync, if you don't use it set it to null
  
- 2) Signup :
+ 3) Signup :
  
  ```javascript
   awsUserPluginInstance.signUp({"id": "UniqueId", "password" : "password",
@@ -76,7 +80,7 @@ For example in some versions of Ios it's not possible to create an account, the 
   });
   ```
 
- 3) SignIn :
+ 4) SignIn :
  
  ```javascript
 awsUserPluginInstance.signIn({"username": Username, "password": password}, function(res) {
@@ -86,7 +90,7 @@ awsUserPluginInstance.signIn({"username": Username, "password": password}, funct
 })
  ```
  
-4) SignOut :
+5) SignOut :
 
  ```javascript
 awsUserPluginInstance.signOut({}, function(res) {
@@ -98,7 +102,7 @@ awsUserPluginInstance.signOut({}, function(res) {
 
 Will SignOut the last user connected
 
- 5) Using Federated Identity
+ 6) Using Federated Identity
  
  After a successfull connection you will be able to create or to open a dataset :
  
